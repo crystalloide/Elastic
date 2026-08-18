@@ -42,9 +42,9 @@ TP/
 ```
 ___
 
-2. Identifiants et ports configurés :
+2. Identifiants et ports configurés :( pas de SSL sur cet exemple donc http)
 
-- Elasticsearch : https://localhost:9200   Utilisateur : elastic  Mot de passe : elasticpassword
+- Elasticsearch : http://localhost:9200   Utilisateur : elastic  Mot de passe : elasticpassword
 
 - Kibana : http://localhost:5601  Connecté automatiquement à Elasticsearch via le compte kibana_system / kibanapassword
 
@@ -65,13 +65,23 @@ docker compose up -d
 Vérifier l'état de santé du cluster (Atelier 1) : 
 
 ```bash 
-curl -k -u elastic:elasticpassword https://localhost:9200/_cluster/health
+curl -k -u elastic:elasticpassword http://localhost:9200/_cluster/health
+```
+
+#### Affichage 
+```texte
+{"cluster_name":"es-bd516-cluster","status":"green","timed_out":false,"number_of_nodes":1,"number_of_data_nodes":1,"active_primary_shards":30,"active_shards":30,"relocating_shards":0,"initializing_shards":0,"unassigned_shards":0,"delayed_unassigned_shards":0,"number_of_pending_tasks":0,"number_of_in_flight_fetch":0,"task_max_waiting_in_queue_millis":0,"active_shards_percent_as_number":100.0}
 ```
 
 Lister les nœuds du cluster via l'API _cat :  
 
 ```bash
-curl -k -u elastic:elasticpassword "https://localhost:9200/_cat/nodes?v"
+curl -k -u elastic:elasticpassword "http://localhost:9200/_cat/nodes?v"
+```
+#### Affichage 
+```texte
+ip         heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
+172.18.0.2           56          24   4    0.48    0.61     0.34 cdfhilmrstw *      es01
 ```
 
 Accéder à Kibana Dev Tools :  
