@@ -1,0 +1,8 @@
+192.168.1.12 - - [18/Aug/2026:10:15:30 +0200] "GET /index.html HTTP/1.1" 200 4500 "http://example.com/start" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+10.0.0.45 - admin [18/Aug/2026:10:15:32 +0200] "POST /api/v1/login HTTP/1.1" 200 1250 "https://example.com/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+172.16.0.88 - - [18/Aug/2026:10:16:01 +0200] "GET /products/item42 HTTP/1.1" 404 230 "http://example.com/products" "Mozilla/5.0 (X11; Linux x86_64)"
+192.168.1.15 - - [18/Aug/2026:10:16:45 +0200] "GET /checkout HTTP/1.1" 500 512 "https://example.com/cart" "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X)"
+192.168.1.12 - - [18/Aug/2026:10:17:10 +0200] "GET /images/banner.jpg HTTP/1.1" 304 0 "http://example.com/index.html" "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+203.0.113.195 - - [18/Aug/2026:10:18:22 +0200] "GET /api/v1/data HTTP/1.1" 401 180 "-" "curl/7.68.0"
+198.51.100.14 - - [18/Aug/2026:10:19:00 +0200] "DELETE /api/v1/user/99 HTTP/1.1" 403 310 "https://example.com/admin" "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+10.0.0.45 - admin [18/Aug/2026:10:20:15 +0200] "GET /dashboard HTTP/1.1" 200 8920 "https://example.com/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
