@@ -18,7 +18,7 @@ pwd
 
 ```bash
 cd ~
-sudo rm -Rf ~/kafka-mongodb-postgresql
+sudo rm -Rf ~/Elastic
 git clone https://github.com/crystalloide/Elastic.git 
 ```
 
