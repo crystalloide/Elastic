@@ -119,6 +119,39 @@ Le fichier data/access.log généré sera immédiatement lisible par Logstash gr
 
 Dans Logstash, le filtre grok avec le pattern %{COMBINEDAPACHELOG} extraira automatiquement tous les champs requis pour constituer la Data View et le Dashboard Kibana.  
 
+___
+
+Remarque : le message Le 401 du licensechecker dans les logs Logstash est sans gravité (comportement connu de ce composant), pas un vrai problème d'authentification.
+
+Reste à confirmer que les données arrivent bien jusqu'à l'index — lance ces deux commandes :
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"message":"test"}' http://localhost:8080
+```
+
+puis
+
+```bash
+curl -u elastic:elasticpassword "http://localhost:9200/bd516-logs-*/_search?pretty"
+```
+
+Si le document "message":"test" apparaît dans le résultat, le pipeline fonctionne de bout en bout et cela confirme que l'on peut ignorer le 401 du licensechecker.
+
+#### Exemple : 
+```text
+Le document "message":"test" est indexé dans bd516-logs-2026.08.18, 
+avec les métadonnées d'enrichissement (host, user_agent, http.request...) générées automatiquement par l'input HTTP. Le pipeline Elasticsearch → Logstash est validé, et le 401 du licensechecker peut être ignoré sans souci — c'est bien une sonde interne sans impact sur l'indexation.
+```
+
+la stack Elastic est opérationnelle et les composants sont accessibles : 
+- Elasticsearch (auth active, HTTP), 
+- Logstash (Beats 5044 + HTTP 8080 → Elasticsearch) 
+- Kibana (http://localhost:5601, login elastic/elasticpassword) 
+
+
+Pour visualiser les événements dans Kibana, il faut créer une data view sur le pattern bd516-logs-*.
+
+
 
 ___
 
