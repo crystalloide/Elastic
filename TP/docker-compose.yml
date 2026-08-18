@@ -1,0 +1,108 @@
+# ==============================================================================
+# Formation BD516 - Elastic Stack (Elasticsearch, Logstash, Kibana)
+# Fichier Docker Compose Prêt à l'Emploi (Version 8.x)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. ELASTICSEARCH : Moteur de recherche et d'indexation
+  # ----------------------------------------------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-bd516-cluster
+      - discovery.type=single-node
+      # Mot de passe du compte superutilisateur 'elastic'
+      - ELASTIC_PASSWORD=elasticpassword
+      # Activation de la sécurité native (TLS + Authentification)
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.license.self_generated.type=basic
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -k https://localhost:9200/_cluster/health -u elastic:elasticpassword | grep -q '"status":"green"\|"status":"yellow"'"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  # ----------------------------------------------------------------------------
+  # 2. INITIALISATION DES ACCÈS KIBANA (Conteneur éphémère d'initialisation)
+  # ----------------------------------------------------------------------------
+  setup_kibana_pass:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: setup_kibana_pass
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    command: >
+      bash -c '
+        echo "Initialisation du mot de passe pour kibana_system...";
+        curl -s -k -u elastic:elasticpassword -X POST https://elasticsearch:9200/_security/user/kibana_system/_password -H "Content-Type: application/json" -d "{"password":"kibanapassword"}";
+        echo "Mot de passe kibana_system configuré avec succès !";
+      '
+    networks:
+      - elastic-net
+
+  # ----------------------------------------------------------------------------
+  # 3. KIBANA : Interface d'exploration, Lens, Dashboards & Dev Tools
+  # ----------------------------------------------------------------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana
+    environment:
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibanapassword
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
+      # Clés de chiffrement requises pour la sécurité Kibana
+      - XPACK_SECURITY_ENCRYPTIONKEY=d83f4g5h6j7k8l9m0n1p2q3r4s5t6u7v
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=d83f4g5h6j7k8l9m0n1p2q3r4s5t6u7v
+      - XPACK_REPORTING_ENCRYPTIONKEY=d83f4g5h6j7k8l9m0n1p2q3r4s5t6u7v
+    ports:
+      - "5601:5601"
+    depends_on:
+      setup_kibana_pass:
+        condition: service_completed_successfully
+    networks:
+      - elastic-net
+
+  # ----------------------------------------------------------------------------
+  # 4. LOGSTASH : Moteur de pipeline ETL
+  # ----------------------------------------------------------------------------
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.0
+    container_name: logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./data:/data:ro
+    ports:
+      - "5044:5044"  # Entrée Beats / Filebeat
+      - "8080:8080"  # Entrée HTTP / Webhooks
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic-net
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  elastic-net:
+    driver: bridge
