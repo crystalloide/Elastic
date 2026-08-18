@@ -1,8 +1,37 @@
+
+#####  Installation
+
+1°) Lancer Ubuntu sur la machine windows (Ubuntu 24.4.1 dans cet exemple) 
+```bash
+ubuntu
+```
+
+2°) Prendre le user souhaité :
+```bash
+su - user
+```
+
+3°) Regarder où nous sommes :
+```bash
+pwd
+```
+
+```bash
+cd ~
+sudo rm -Rf ~/kafka-mongodb-postgresql
+git clone https://github.com/crystalloide/Elastic.git 
+```
+
+```bash
+cd ~/Elastic/TP/
+```
+
 ___
 
 1. Structure de dossiers recommandée sur le poste stagiaire
 
-Avant de démarrer l'environnement, créez l'arborescence suivante dans votre dossier de TP :
+Arborescence suivante du TP :
+
 TP/
 ├── docker-compose.yml
 ├── data/
@@ -29,20 +58,21 @@ ___
 
 Lancer la stack en arrière-plan :
 
+```bash
 docker compose up -d
-
+```
 
 Vérifier l'état de santé du cluster (Atelier 1) : 
- 
- 
-curl -k -u elastic:elasticpassword https://localhost:9200/_cluster/health
 
+```bash 
+curl -k -u elastic:elasticpassword https://localhost:9200/_cluster/health
+```
 
 Lister les nœuds du cluster via l'API _cat :  
 
-
+```bash
 curl -k -u elastic:elasticpassword "https://localhost:9200/_cat/nodes?v"
-
+```
 
 Accéder à Kibana Dev Tools :  
 - Ouvrez http://localhost:5601 dans votre navigateur.  
@@ -58,13 +88,13 @@ Exécution et intégration :
 
 Exécutez le script generate_logs.py depuis la racine de votre projet TP :
 
+```python
 python3 generate_logs.py
+```
 
 Le fichier data/access.log généré sera immédiatement lisible par Logstash grâce au montage de volume défini dans docker-compose.yml (./data:/data:ro).  
 
 Dans Logstash, le filtre grok avec le pattern %{COMBINEDAPACHELOG} extraira automatiquement tous les champs requis pour constituer la Data View et le Dashboard Kibana.  
-
-
 
 
 ___
@@ -77,8 +107,7 @@ il existe deux approches pour gérer le démarrage du cluster et la connexion de
 
 ### Option A : Mots de passe prédéfinis (Approche intégrée dans le docker-compose.yml fourni)
 
-C'est l'approche la plus fluide pour une formation de 2 jours 
-afin d'éviter que les stagiaires ne perdent du temps à chercher des clés dans les logs Docker.
+C'est l'approche la plus fluide pour une formation de 2 jours afin d'éviter que les stagiaires ne perdent du temps à chercher des clés dans les logs Docker.
 
 Dans le fichier docker-compose.yml fourni précédemment : 
 
@@ -101,6 +130,7 @@ ou à exécuter en amont :
 
 Script d'extraction/génération : init-cluster.sh
 
+```script
 #!/bin/bash
 echo "=== 1. Attente du démarrage complet d'Elasticsearch ==="
 until curl -s -k https://localhost:9200 -u elastic:elasticpassword > /dev/null; do
@@ -119,11 +149,12 @@ docker exec -ti elasticsearch /usr/share/elasticsearch/bin/elasticsearch-reset-p
 
 echo -e "\n=== 4. Vérification de l'accès TLS avec curl ==="
 curl -k -u elastic:elasticpassword https://localhost:9200/_cluster/health?pretty
-
+```
 
 
 ### Récapitulatif pour l'animation de l'Atelier 1
 
+```text
 Élément										Commandes Utiles pour le Formateur / Stagiaires
 
 Générer un jeton Kibana à la demande		docker exec -it elasticsearch /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
@@ -134,7 +165,7 @@ Vérifier le statut du cluster avec curl		curl -k -u elastic:elasticpassword htt
 
 Consulter les logs de démarrage master		docker logs elasticsearch | grep -i "selected-as-master"
 
-
+```
 
 
 
