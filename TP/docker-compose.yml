@@ -16,9 +16,11 @@ services:
       - discovery.type=single-node
       # Mot de passe du compte superutilisateur 'elastic'
       - ELASTIC_PASSWORD=elasticpassword
-      # Activation de la sécurité native (TLS + Authentification)
+      # Activation de la sécurité native (Authentification par utilisateur/mot de passe)
       - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=true
+      # TLS désactivé côté HTTP : aucun certificat n'est fourni ci-dessous (setup formation).
+      # Pour un vrai déploiement, fournir xpack.security.http.ssl.keystore.path (ou key+certificate) et repasser à true.
+      - xpack.security.http.ssl.enabled=false
       - xpack.license.self_generated.type=basic
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
@@ -31,7 +33,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s -k https://localhost:9200/_cluster/health -u elastic:elasticpassword | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"
+          "curl -s http://localhost:9200/_cluster/health -u elastic:elasticpassword | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"
         ]
       interval: 10s
       timeout: 10s
@@ -49,7 +51,7 @@ services:
     command: >
       bash -c '
         echo "Initialisation du mot de passe pour kibana_system...";
-        curl -s -k -u elastic:elasticpassword -X POST https://elasticsearch:9200/_security/user/kibana_system/_password -H "Content-Type: application/json" -d "{\"password\":\"kibanapassword\"}";
+        curl -s -u elastic:elasticpassword -X POST http://elasticsearch:9200/_security/user/kibana_system/_password -H "Content-Type: application/json" -d "{\"password\":\"kibanapassword\"}";
         echo "Mot de passe kibana_system configuré avec succès !";
       '
     networks:
@@ -63,10 +65,9 @@ services:
     container_name: kibana
     environment:
       - SERVER_NAME=kibana
-      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=kibanapassword
-      - ELASTICSEARCH_SSL_VERIFICATIONMODE=none
       # Clés de chiffrement requises pour la sécurité Kibana
       - XPACK_SECURITY_ENCRYPTIONKEY=d83f4g5h6j7k8l9m0n1p2q3r4s5t6u7v
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=d83f4g5h6j7k8l9m0n1p2q3r4s5t6u7v
