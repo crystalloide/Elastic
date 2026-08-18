@@ -89,6 +89,19 @@ Accéder à Kibana Dev Tools :
 - Connectez-vous avec elastic / elasticpassword
 - Allez dans Management > Dev Tools pour exécuter les requêtes Query DSL et ES|QL
 
+Dans Kibana → Dev Tools → Console (syntaxe compacte verbe + chemin, sans URL ni http://) :
+
+```requete
+GET _cat/nodes?v
+```
+
+et pour une vraie recherche avec un corps JSON :
+```requete
+GET _search
+{
+  "query": { "match_all": {} }
+}
+```
 
 ___
 
