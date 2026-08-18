@@ -31,7 +31,7 @@ ___
 1. Structure de dossiers recommandée sur le poste stagiaire
 
 Arborescence suivante du TP :
-
+```bash
 TP/
 ├── docker-compose.yml
 ├── data/
@@ -39,7 +39,7 @@ TP/
 └── logstash/
     └── pipeline/
         └── apache_pipeline.conf  # Pipeline Logstash pour l'Atelier 3
-
+```
 ___
 
 2. Identifiants et ports configurés :
