@@ -151,7 +151,26 @@ la stack Elastic est opérationnelle et les composants sont accessibles :
 
 Pour visualiser les événements dans Kibana, il faut créer une data view sur le pattern bd516-logs-*.
 
+1. Se connecter à Kibana
+Ouvre http://localhost:5601 dans ton navigateur, puis connecte-toi avec elastic / elasticpassword.
 
+2. Ouvrir Stack Management
+Clique sur le menu ☰ en haut à gauche, puis descends jusqu'à « Management » et choisis « Stack Management ».
+
+3. Aller dans Data Views
+Dans le panneau de gauche de Stack Management, sous la section « Kibana », clique sur « Data Views » (c'était appelé « Index Patterns » dans les anciennes versions).
+
+4. Créer la data view
+Clique sur « Create data view ». Dans le champ « Name », saisis bd516-logs-* (le champ « Index pattern » se remplit automatiquement pareil).
+Kibana doit lister tes index existants (dont bd516-logs-2026.08.18) juste en dessous pour confirmer que ça matche.
+
+5. Vérifier le champ de temps
+Kibana détecte automatiquement @timestamp comme champ temporel (c'est celui que Logstash ajoute à chaque événement) — laisse-le tel quel.
+
+6. Enregistrer et explorer
+Clique sur « Save data view to Kibana », puis va dans le menu ☰ > Discover : tu devrais voir ton document de test ("message": "test") apparaître.
+
+Une fois enregistrée, cette data view sert aussi de base pour construire des visualisations et dashboards Lens sur ces logs.
 
 ___
 
