@@ -148,8 +148,8 @@ la stack Elastic est opérationnelle et les composants sont accessibles :
 - Logstash (Beats 5044 + HTTP 8080 → Elasticsearch) 
 - Kibana (http://localhost:5601, login elastic/elasticpassword) 
 
-
-Pour visualiser les événements dans Kibana, il faut créer une data view sur le pattern bd516-logs-*.
+___
+#### Pour visualiser les événements dans Kibana, il faut créer une data view sur le pattern bd516-logs-*.
 
 1. Se connecter à Kibana
 Ouvre http://localhost:5601 dans ton navigateur, puis connecte-toi avec elastic / elasticpassword.
